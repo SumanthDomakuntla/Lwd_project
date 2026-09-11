@@ -16,8 +16,8 @@
 
   <main class="page">
     <header class="hero">
-      <div class="eyebrow">Sumanth Domakuntla Signing Off</div>
-      <h1>Sign Off<span>.</span></h1>
+      <div class="eyebrow">Sumanth Domakuntla</div>
+      <h1>Signing Off<span>.</span></h1>
       <p>
         Some journeys end, but the people and moments that made them meaningful
         stay with us. Before moving forward, leaving a small note for the people
@@ -156,11 +156,13 @@
       <span>© <span id="year"></span> Sumanth Domakuntla </span>
     </footer>
   </main>
-
+  <!-- Personal note popup -->
   <div id="modal" class="modal" aria-hidden="true">
     <div class="modal-backdrop" data-close></div>
     <article class="note-card">
-      <button class="close" aria-label="Close" data-close>×</button>
+      <div id="noteBackground" class="note-background"></div>
+      <div class="note-overlay"></div>
+      <button type="button" class="close" aria-label="Close" data-close>×</button>
       <div class="note-meta">
         <span>PERSONAL NOTE</span>
         <span id="noteTo"></span>
@@ -170,14 +172,26 @@
       <p id="noteMessage"></p>
       <div class="note-footer">
         <span>WITH APPRECIATION</span>
-        <button class="close-pill" data-close>Close</button>
+        <button type="button" class="close-pill" data-close>Close</button>
       </div>
     </article>
   </div>
 
+  <!-- Photo popup -->
+  <div id="lightbox" class="lightbox" aria-hidden="true">
+    <div class="lightbox-backdrop" data-lightbox-close></div>
+    <button type="button" class="lightbox-close" data-lightbox-close aria-label="Close">×</button>
+    <button type="button" class="lightbox-prev" id="galleryPrev" aria-label="Previous photo">←</button>
+    <figure class="lightbox-figure">
+      <img id="lightboxImage" src="" alt="">
+      <figcaption id="lightboxCaption"></figcaption>
+    </figure>
+    <button type="button" class="lightbox-next" id="galleryNext" aria-label="Next photo">→</button>
+  </div>
+
   <script>
-    // Replace these entries with your actual colleagues and messages.
     const people = [
+
       {
         name: "Sowmya Sura",
         note: "Sowmya, it was really nice working with you and being part of the same journey for 4 years. Your friendly presence and our bonding made the everyday experience better. We are like a family, more than colleagues.  Wishing you plenty of success, happiness, and exciting new experiences in everything that comes next."
@@ -196,11 +210,11 @@
       },
       {
         name: "Einstein Dsouza",
-        note: "Some people make a workplace feel better simply by being there. Thank you for the memories, and wishing you the very best."
+        note: "It was a very good time we spent together in office and in outings. Continue your gym and hope you achieve whatever you are targeting. Thank you for the memories, and wishing you the very best."
       },
       {
         name: "Srikanth Boddu",
-        note: "Thank you for the kindness, guidance, conversations and memories. May your next journey be even more rewarding."
+        note: "Thank you for the kindness, guidance, conversations and memories. Keep inspiring, supporting and be a role model for all the young talent like me. May your next journey be even more rewarding."
       },
       {
         name: "Sai Prem N",
@@ -208,15 +222,15 @@
       },
       {
         name: "Sathiya KR",
-        note: "Cheers to the journey so far and to everything waiting ahead. Thank you for being part of the story."
+        note: "Cheers to the journey so far and All the best for upcoming challanges which you can handle easily with your expertise . Thank you for being part of the story."
       },
       {
         name: "Vineeth KG",
-        note: "Thank you for being part of this journey. Wishing you great opportunities, wonderful experiences and lots of success ahead."
+        note: "All the best for your future and hope you succeed in whichever path you go. Thank you for being part of this journey. Wishing you great opportunities, wonderful experiences and lots of success ahead."
       },
       {
         name: "Shashi T",
-        note: "Thank you for being part of this journey. Wishing you great opportunities, wonderful experiences and lots of success ahead."
+        note: "Thank you for being part of this journey. All the best for the new role which you are entering now. Be healthy and fit as you are now."
       },
       {
         name: "Pawan Patel",
@@ -224,23 +238,27 @@
       },
       {
         name: "Andreas Von Casimir",
-        note: "Thank you for being part of this journey. Wishing you great opportunities, wonderful experiences and lots of success ahead."
+        note: "Thank you for all the support, guidance, and time you’ve given me throughout my journey. I truly appreciate not only everything we discussed around the project, but also the conversations and time spent beyond project topics. The Hamburg trip was another special part of this journey, and I’m grateful for the opportunity, the experiences, and the memories we created there. It has been a pleasure working with you and learning from you. Wishing you continued success, and I hope we stay connected!"
+      },
+      {
+        name: "LHT Team",
+        note: "Thank you Michaela & Raghuram for all the support and opportunities you’ve given me throughout my journey. I truly appreciate not only everything we discussed around the project, but also the conversations and time spent in LHT base and the dinner outings.  It has been a pleasure working with you and learning from you. Wishing you continued success."
       },
       {
         name: "Peter Ramon",
-        note: "Thank you for being part of this journey. Wishing you great opportunities, wonderful experiences and lots of success ahead."
+        note: "Thank you for always being there with your support whenever I needed it. I truly appreciate your guidance and the time you took to assist me. It has been a pleasure working with you and creating some great memories along the way. Wishing you all the very best."
       },
       {
         name: "CIMPA Hamburg Team",
-        note: "Thank you for being part of this journey. Wishing you great opportunities, wonderful experiences and lots of success ahead."
+        note: "Thank you Team(Carsten, Michael,Shyam) for the wonderful time we spent in hamburg. Wishing you wonderful experiences and great opportunities ahead."
       },
       {
         name: "Shinjini Sinha",
-        note: "Thank you for being part of this journey. Wishing you great opportunities, wonderful experiences and lots of success ahead."
+        note: "Thank you for everything. Wishing you great opportunities, wonderful experiences and lots of success ahead."
       },
       {
         name: "Bangalore Team",
-        note: "Thank you for being part of this journey. Wishing you great opportunities, wonderful experiences and lots of success ahead."
+        note: "Thank you everyone for being part of this journey. Wishing you great opportunities, wonderful experiences and lots of success ahead."
       }
     ];
 
@@ -249,9 +267,12 @@
     const noteName = document.getElementById("noteName");
     const noteTo = document.getElementById("noteTo");
     const noteMessage = document.getElementById("noteMessage");
+    const noteBackground = document.getElementById("noteBackground");
 
+    // Build colleague cards and preserve each personalized message.
     people.forEach((person, index) => {
       const card = document.createElement("button");
+      card.type = "button";
       card.className = "person-card";
       card.style.setProperty("--delay", `${index * 70}ms`);
       card.innerHTML = `
@@ -259,14 +280,28 @@
         <span class="person-number">${String(index + 1).padStart(2, "0")}</span>
         <span class="person-arrow">↗</span>
       `;
-      card.addEventListener("click", () => openNote(person));
+      card.addEventListener("click", () => openNote(person, index));
       grid.appendChild(card);
     });
 
-    function openNote(person) {
+    function openNote(person, index) {
       noteName.textContent = person.name;
       noteTo.textContent = person.name.toUpperCase();
       noteMessage.textContent = person.note;
+
+      // Optional individual background photo. Add bg to a person object later.
+      if (person.bg) {
+        noteBackground.style.backgroundImage = `url("${person.bg}")`;
+        noteBackground.classList.add("has-image");
+      } else {
+        noteBackground.style.backgroundImage = "";
+        noteBackground.classList.remove("has-image");
+      }
+
+      document.querySelectorAll(".person-card").forEach((card, i) => {
+        card.classList.toggle("selected", i === index);
+      });
+
       modal.classList.add("open");
       modal.setAttribute("aria-hidden", "false");
       document.body.classList.add("locked");
@@ -278,47 +313,40 @@
       document.body.classList.remove("locked");
     }
 
-    document.querySelectorAll("[data-close]").forEach(el =>
-      el.addEventListener("click", closeNote)
-    );
-
-    document.addEventListener("keydown", e => {
-      if (e.key === "Escape") closeNote();
+    document.querySelectorAll("[data-close]").forEach((el) => {
+      el.addEventListener("click", closeNote);
     });
 
-    document.getElementById("year").textContent = new Date().getFullYear();
-
-    // Gallery is deliberately data-driven so more photos can be added later.
+    // -------------------------
+    // Photo gallery popup
+    // -------------------------
     const galleryImages = [
-      { src: "photos/TD3.jpeg", caption: " A moment to remember" }
-	  ,{ src: "photos/TD4.jpeg", caption: " Team Dinner" }
-	  ,{ src: "photos/TD2.jpeg", caption: " Team Excellence Award" }
-	  ,{ src: "photos/TD5.jpeg", caption: " Team Dinner" }
-	  ,{ src: "photos/TD6.jpeg", caption: " Townhall event at THE DEN" }
-	  ,{ src: "photos/LHT_Team.jpeg", caption: "Dinner with LHT Team" }
-	  ,{ src: "photos/Cimpa.jpeg", caption: "Party with Cimpa Team" }
-	  ,{ src: "photos/Cricket.jpeg", caption: "Sopra Cricket League" }
-	  ,{ src: "photos/AshithaLWD.jpeg", caption: "A moment to remember" }
-	  ,{ src: "photos/Lunch1.jpeg", caption: "Moments in office" }
-	  ,{ src: "photos/Ofc.jpeg", caption: "Townhall" }
-	  ,{ src: "photos/Outing.jpeg", caption: "Team Outing" }
-	  ,{ src: "photos/potluck.jpeg", caption: "Pot luck" }
-	  ,{ src: "photos/Ofc1.jpeg", caption: " Townhall" }
-	  ,{ src: "photos/Lunch2.jpeg", caption: "Moments in office" }
-	  ,{ src: "photos/MohanLwd.jpeg", caption: " A moment to remember" }
-	  ,{ src: "photos/pavanilwd.jpeg", caption: " A moment to remember" }
-	  ,{ src: "photos/TD7.jpeg", caption: " At The Den" }
-	  ,{ src: "photos/TD8.jpeg", caption: " Team Starter" }
-	  ,{ src: "photos/TD9.jpeg", caption: " Team Dinner" }
-	  ,{ src: "photos/TD10.jpeg", caption: " A moment to remember" }
-	  ,{ src: "photos/TD11.jpeg", caption: " A moment to remember" }
-	  ,{ src: "photos/TD12.jpeg", caption: "First Team Dinner @2023" }
-	  ,{ src: "photos/TeamDinner1.jpeg", caption: " A moment to remember" }
-	  ,{ src: "photos/TraditionalDay.jpeg", caption: " Diwali Celebrations" }
-	  ,{ src: "photos/TraditionalDay1.jpeg", caption: " A moment to remember" }
-	  
-      // Add future photos here:
-      // ,{ src: "photos/memory-02.jpeg", caption: "02 · Team memories" }
+      {src:"photos/TD3.jpeg", caption:"A moment to remember"},
+      {src:"photos/TD4.jpeg", caption:"Team Dinner"},
+      {src:"photos/TD2.jpeg", caption:"Team Excellence Award"},
+      {src:"photos/TD5.jpeg", caption:"Team Dinner"},
+      {src:"photos/TD6.jpeg", caption:"Townhall event at THE DEN"},
+      {src:"photos/LHT_Team.jpeg", caption:"Dinner with LHT Team"},
+      {src:"photos/Cimpa.jpeg", caption:"Party with Cimpa Team"},
+      {src:"photos/Cricket.jpeg", caption:"Sopra Cricket League"},
+      {src:"photos/AshithaLWD.jpeg", caption:"A moment to remember"},
+      {src:"photos/Lunch1.jpeg", caption:"Moments in office"},
+      {src:"photos/Ofc.jpeg", caption:"Townhall"},
+      {src:"photos/Outing.jpeg", caption:"Team Outing"},
+      {src:"photos/potluck.jpeg", caption:"Pot luck"},
+      {src:"photos/Ofc1.jpeg", caption:"Townhall"},
+      {src:"photos/Lunch2.jpeg", caption:"Moments in office"},
+      {src:"photos/MohanLwd.jpeg", caption:"A moment to remember"},
+      {src:"photos/pavanilwd.jpeg", caption:"A moment to remember"},
+      {src:"photos/TD7.jpeg", caption:"At The Den"},
+      {src:"photos/TD8.jpeg", caption:"Team Starter"},
+      {src:"photos/TD9.jpeg", caption:"Team Dinner"},
+      {src:"photos/TD10.jpeg", caption:"A moment to remember"},
+      {src:"photos/TD11.jpeg", caption:"A moment to remember"},
+      {src:"photos/TD12.jpeg", caption:"First Team Dinner @2023"},
+      {src:"photos/TeamDinner1.jpeg", caption:"A moment to remember"},
+      {src:"photos/TraditionalDay.jpeg", caption:"Diwali Celebrations"},
+      {src:"photos/TraditionalDay1.jpeg", caption:"A moment to remember"}
     ];
 
     const lightbox = document.getElementById("lightbox");
@@ -328,58 +356,69 @@
     const galleryNext = document.getElementById("galleryNext");
     let galleryIndex = 0;
 
-    function showGalleryImage(index) {
-      if (!galleryImages.length) return;
+    function openPhoto(index) {
       galleryIndex = (index + galleryImages.length) % galleryImages.length;
-      const item = galleryImages[galleryIndex];
-      lightboxImage.src = item.src;
-      lightboxImage.alt = item.caption;
-      lightboxCaption.textContent = item.caption;
+      const photo = galleryImages[galleryIndex];
+
+      lightboxImage.src = photo.src;
+      lightboxImage.alt = photo.caption;
+      lightboxCaption.textContent = photo.caption;
+
+      lightbox.classList.add("open");
+      lightbox.setAttribute("aria-hidden", "false");
+      document.body.classList.add("locked");
     }
 
-    document.querySelectorAll(".gallery-item").forEach(item => {
-      item.addEventListener("click", () => {
-        showGalleryImage(Number(item.dataset.index));
-        lightbox.classList.add("open");
-        lightbox.setAttribute("aria-hidden", "false");
-        document.body.classList.add("locked");
+    function closePhoto() {
+      lightbox.classList.remove("open");
+      lightbox.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("locked");
+    }
+
+    function previousPhoto() {
+      openPhoto(galleryIndex - 1);
+    }
+
+    function nextPhoto() {
+      openPhoto(galleryIndex + 1);
+    }
+
+    // IMPORTANT: every gallery card opens the corresponding image.
+    document.querySelectorAll(".gallery-item").forEach((item) => {
+      item.addEventListener("click", (event) => {
+        event.preventDefault();
+        openPhoto(Number(item.dataset.index));
       });
     });
 
-    galleryPrev.addEventListener("click", () => showGalleryImage(galleryIndex - 1));
-    galleryNext.addEventListener("click", () => showGalleryImage(galleryIndex + 1));
-
-    document.querySelectorAll("[data-lightbox-close]").forEach(el => {
-      el.addEventListener("click", () => {
-        lightbox.classList.remove("open");
-        lightbox.setAttribute("aria-hidden", "true");
-        document.body.classList.remove("locked");
-      });
+    galleryPrev.addEventListener("click", (event) => {
+      event.stopPropagation();
+      previousPhoto();
     });
 
-    document.addEventListener("keydown", e => {
-      if (!lightbox.classList.contains("open")) return;
-      if (e.key === "Escape") {
-        lightbox.classList.remove("open");
-        lightbox.setAttribute("aria-hidden", "true");
-        document.body.classList.remove("locked");
+    galleryNext.addEventListener("click", (event) => {
+      event.stopPropagation();
+      nextPhoto();
+    });
+
+    document.querySelectorAll("[data-lightbox-close]").forEach((item) => {
+      item.addEventListener("click", closePhoto);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeNote();
+        closePhoto();
       }
-      if (e.key === "ArrowLeft") showGalleryImage(galleryIndex - 1);
-      if (e.key === "ArrowRight") showGalleryImage(galleryIndex + 1);
+
+      if (lightbox.classList.contains("open")) {
+        if (event.key === "ArrowLeft") previousPhoto();
+        if (event.key === "ArrowRight") nextPhoto();
+      }
     });
 
+    document.getElementById("year").textContent = new Date().getFullYear();
   </script>
-
-  <div id="lightbox" class="lightbox" aria-hidden="true">
-    <div class="lightbox-backdrop" data-lightbox-close></div>
-    <button class="lightbox-close" data-lightbox-close aria-label="Close">×</button>
-    <button class="lightbox-prev" id="galleryPrev" aria-label="Previous photo">←</button>
-    <figure class="lightbox-figure">
-      <img id="lightboxImage" src="" alt="">
-      <figcaption id="lightboxCaption"></figcaption>
-    </figure>
-    <button class="lightbox-next" id="galleryNext" aria-label="Next photo">→</button>
-  </div>
 
 </body>
 </html>
